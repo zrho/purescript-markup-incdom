@@ -10,11 +10,8 @@
     "output"
   ],
   "dependencies": {
-    "purescript-eff-functions": "~0.1.0",
-    "purescript-control": "~0.3.2",
-    "purescript-simple-dom": "0.1.2",
-    "purescript-foldable-traversable": "~0.4.2",
     "purescript-markup": "~0.1.0",
-    "purescript-nullable": "~0.2.1"
+    "purescript-dom": "~0.2.21",
+    "purescript-eff-functions": "~0.1.1"
   }
 }

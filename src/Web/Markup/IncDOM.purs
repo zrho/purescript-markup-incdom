@@ -11,25 +11,23 @@ import Control.Apply
 import Control.Monad.Eff
 import Web.Markup
 import DOM (DOM ())
-import Data.DOM.Simple.Element (Element)
-import Data.DOM.Simple.Window (globalWindow, document)
-import Data.DOM.Simple.Document (body)
+import DOM.HTML (window)
+import DOM.HTML.Document (body)
+import DOM.HTML.Window (document)
+import DOM.HTML.Types (HTMLElement ())
 import Data.Function.Eff
 
 -- | Render `Markup` to a DOM element using virtual-dom.
 renderTo
-  :: forall eff e. (Element e)
-  => e -> Markup (Eff (dom :: DOM | eff) Unit) -> Eff (dom :: DOM | eff) Unit
+  :: forall eff. HTMLElement
+  -> Markup (Eff (dom :: DOM | eff) Unit) -> Eff (dom :: DOM | eff) Unit
 renderTo e m = runEffFn2 _patch e (renderMarkup m)
 
 -- | Render `Markup` to the body of the DOM using virtual-dom.
 renderToBody
   :: forall eff. Markup (Eff (dom :: DOM | eff) Unit)
   -> Eff (dom :: DOM | eff) Unit
-renderToBody m = do
-  d <- document globalWindow
-  b <- body d
-  renderTo b m
+renderToBody m = window >>= document >>= body >>= toMaybe >>> traverse_ (flip renderTo m)
 
 -- | Converts `Markup` to an incremental DOM render function.
 renderMarkup :: forall eff. Markup (Eff eff Unit) -> Render
@@ -67,7 +65,7 @@ foreign import _elementClose :: EffFn1 (incDOM :: INCDOM) Tag Unit
 foreign import _attr :: EffFn2 (incDOM :: INCDOM) Attr String Unit
 foreign import _handler :: forall eff. EffFn2 (incDOM :: INCDOM) String (EffFn1 eff Foreign Unit) Unit
 foreign import _text :: EffFn1 (incDOM :: INCDOM) String Unit
-foreign import _patch :: forall eff e. EffFn2 (dom :: DOM | eff) e Render Unit
+foreign import _patch :: forall eff. EffFn2 (dom :: DOM | eff) HTMLElement Render Unit
 
 -- | Monoid that chains actions in an applicative.
 newtype Chained f = Chained (f Unit)
