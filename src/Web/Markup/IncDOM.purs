@@ -21,7 +21,7 @@ import Data.Function.Eff
 renderTo
   :: forall eff. HTMLElement
   -> Markup (Eff (dom :: DOM | eff) Unit) -> Eff (dom :: DOM | eff) Unit
-renderTo e m = runEffFn2 _patch e (renderMarkup m)
+renderTo e m = runEffFn1 _withHooks (runEffFn2 _patch e (renderMarkup m))
 
 -- | Render `Markup` to the body of the DOM using virtual-dom.
 renderToBody
@@ -66,6 +66,7 @@ foreign import _attr :: EffFn2 (incDOM :: INCDOM) Attr String Unit
 foreign import _handler :: forall eff. EffFn2 (incDOM :: INCDOM) String (EffFn1 eff Foreign Unit) Unit
 foreign import _text :: EffFn1 (incDOM :: INCDOM) String Unit
 foreign import _patch :: forall eff. EffFn2 (dom :: DOM | eff) HTMLElement Render Unit
+foreign import _withHooks :: forall eff. EffFn1 (dom :: DOM | eff) (Eff (dom :: DOM | eff) Unit) Unit
 
 -- | Monoid that chains actions in an applicative.
 newtype Chained f = Chained (f Unit)

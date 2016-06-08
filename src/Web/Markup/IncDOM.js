@@ -12,3 +12,14 @@ exports._attr = incDom.attr;
 exports._text = incDom.text;
 exports._handler = incDom.attr;
 exports._patch = incDom.patch;
+
+exports._withHooks = function(go) {
+    var attrBackup = incDom.attributes;
+    incDom.attributes.value = incDom.applyProp;
+
+    try {
+        go();
+    } finally {
+        incDom.attributes = attrBackup;
+    }
+};
